@@ -1,6 +1,8 @@
 # Installing the libraries
 import urllib
 import os, sys
+
+# sudo apt-get install python-imaging
 from PIL import Image
 from resizeimage import resizeimage
 
@@ -28,17 +30,33 @@ def pic_downloader(url, file_name, file_extension, count):
 		url = "/".join(url)
 		file_name = file_folder + "Pic" + str(i) + file_extension
 
-		print("Downloading " + url + " to " + file_name)
+		print("Downloading " + url + " to " + file_folder + file_name)
 		urllib.urlretrieve(url, file_name)
 
-        pic_resizer()
+		file_location = file_folder + file_name
+        pic_resizer(i, file_location)
 
-def pic_resizer():
-    img = Image.open(file_folder + )  # image extension *.png,*.jpg
-    new_width = 200
-    new_height = 300
+def pic_resizer(i, file_location):
+
+    img = Image.open(file_location)
+    img_size = img.size
+
+    # Need to resize one of the following photo to the 512px
+
+    old_height = img_size[0]
+    old_width = img_size[1]
+
+    if old_height > old_width:
+        scale = (old_height - old_width)/old_height
+        new_height = 512
+        new_width = old_width * scale
+    else:
+        scale = (old_width - old_height)/old_width
+        new_width = 512
+        new_height = old_height * scale
+
     img = img.resize((new_width, new_height), Image.ANTIALIAS)
-    img.save('output image name.png')  # format may what u want ,*.png,*jpg,*.gif
+    img.save(file_location)
 
 def main():
 	if url == "" and count == 0:
