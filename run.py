@@ -6,11 +6,11 @@ import urllib
 import PIL
 from PIL import Image
 
-url = "https://stickershop.line-scdn.net/stickershop/v1/sticker/36146094/ANDROID/sticker.png"
+url = ""
 file_header = "Pic"
 file_extension = ".png"
 file_folder = ""
-count = 60
+count = 64
 
 def value_getter():
     print("Please type in the URL")
@@ -80,9 +80,10 @@ def pic_resizer(file_location):
 
 
 def main(test_count=0):
-    if test_count == 5:
+    if test_count >= 5:
         raise Exception('Reached maximum attempt')
 
+# URL Validation
     if url == "":
         print("Warning : No URL is provided...")
         value_getter()
@@ -91,6 +92,10 @@ def main(test_count=0):
         print("Lethal : URL you provide is unreachable...")
         value_getter()
         main(test_count=test_count+1)
+
+# Folder Validation
+if file_folder != "":
+    
 
     pic_downloader(url, file_extension, count)
 
