@@ -1,8 +1,8 @@
 # Installing the libraries
 import urllib
-import os, sys
 
 # sudo apt-get install python-imaging
+# or install Pillow (PIL) using pip `pip install Pillow`
 import PIL
 from PIL import Image
 
@@ -25,40 +25,73 @@ def pic_downloader(url, file_extension, count):
     for i in range(count):
         # Editing a URL
         url = url.split('/')
-        if (i == 0):
-            int_url = int(url[6])
-        else:
+        if i:
             int_url = int(url[6]) + 1
+        else:
+            int_url = int(url[6])
         url[6] = str(int_url)
         url = "/".join(url)
+
+        # Set file name
         file_name = file_folder + file_header + str(i) + file_extension
-
-        print("Downloading " + str(int_url) + " to " + file_folder + file_name)
-        urllib.urlretrieve(url, file_name)
-
         file_location = file_folder + file_name
 
-		#pic_resizer(i, file_location)
+        # Check if edited URL is valid
+        if urllib.urlopen(url).getcode() >= 300:
+            print("Invalid URL of", str(url) + ".\nSkipping....")
 
-def pic_resizer(i, file_location):
+        else:
+            print("-------------------------------------")
+            print("Downloading ID" + str(int_url) + " to " + file_location)
+            urllib.urlretrieve(url, file_name)
 
-    img = Image.open(file_location)
-    # Need to resize one of the following photo to the 512px
+        pic_resizer(file_location)
 
-    old_height = img.size[0]
-    old_width = img.size[1]
+def pic_resizer(file_location):
 
-    print(old_height + " x " old_width)
+    try:
+        img = Image.open(file_location)
 
-    baseheight = 512
+        # Checking the photo size
+        print("Raw size :", str(img.size[0]) + " x " + str(img.size[1]))
 
-    hpercent = (baseheight / float(img.size[1]))
-    wsize = int((float(img.size[0]) * float(hpercent)))
+        # Preferred new some side size
+        preference_size = 512
 
-    img = img.resize((wsize, baseheight), PIL.Image.ANTIALIAS)
-    img.save(/)
+        # Largest side will be main thing.
+        if img.size[1] == max(img.size[0], img.size[1]):
+            ratio = (preference_size / float(img.size[1]))
+            wsize = int((float(img.size[0]) * float(ratio)))
+            img = img.resize((wsize, preference_size), PIL.Image.ANTIALIAS)
+        else:
+            ratio = (preference_size / float(img.size[0]))
+            wsize = int((float(img.size[1]) * float(ratio)))
+            img = img.resize((preference_size, wsize), PIL.Image.ANTIALIAS)
 
-def main():
+        print("New size :", str(img.size[0]), "x", str(img.size[1]))
+
+        # Save the file, where it should be
+        img.save(file_location)
+        print("File is saved at", str(file_location))
+
+    except IOError:
+        # Psudo throwing an exception (not throwing unacceptable error)
+        print("Resizer cannot open file : " + file_location)
+
+
+def main(test_count=0):
+    if test_count == 5:
+        raise Exception('Reached maximum attempt')
+
+    if url == "":
+        print("Warning : No URL is provided...")
+        value_getter()
+        main(test_count=test_count + 1)
+    elif urllib.urlopen(url).getcode() != 200:
+        print("Lethal : URL you provide is unreachable...")
+        value_getter()
+        main(test_count=test_count+1)
+
     pic_downloader(url, file_extension, count)
 
 main()
