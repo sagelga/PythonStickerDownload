@@ -1,4 +1,5 @@
 # Installing the libraries
+import os
 import urllib
 
 # sudo apt-get install python-imaging
@@ -6,7 +7,7 @@ import urllib
 import PIL
 from PIL import Image
 
-url = ""
+url = "https://stickershop.line-scdn.net/stickershop/v1/sticker/35755862/ANDROID/sticker.png"
 file_header = "Pic"
 file_extension = ".png"
 file_folder = ""
@@ -42,7 +43,7 @@ def pic_downloader(url, file_extension, count):
 
         else:
             print("-------------------------------------")
-            print("Downloading ID" + str(int_url) + " to " + file_location)
+            print("Downloading ID : " + str(int_url) + " to " + file_location)
             urllib.urlretrieve(url, file_name)
 
         pic_resizer(file_location)
@@ -88,14 +89,15 @@ def main(test_count=0):
         print("Warning : No URL is provided...")
         value_getter()
         main(test_count=test_count + 1)
-    elif urllib.urlopen(url).getcode() != 200:
+    elif urllib.urlopen(url).getcode() > 400:
         print("Lethal : URL you provide is unreachable...")
         value_getter()
         main(test_count=test_count+1)
 
-# Folder Validation
-if file_folder != "":
-    
+    # Folder Validation
+    if file_folder != "":
+        if not os.path.exists(file_folder):
+            raise Exception("Folder doesn't exist")
 
     pic_downloader(url, file_extension, count)
 
