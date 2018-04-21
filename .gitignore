@@ -1,4 +1,7 @@
-!*.py
 .DS_Store
 .idea/
 .gitignore.swp
+*.png
+*.jpg
+*.jpeg
+*.gif
