@@ -1,6 +1,6 @@
 # Installing the libraries
 import os
-import urllib
+import urllib.request
 
 # sudo apt-get install python-imaging
 # or install Pillow (PIL) using pip `pip install Pillow`
@@ -13,6 +13,7 @@ file_extension = ".png"
 file_folder = ""
 count = 64
 
+
 def value_getter():
     print("Please type in the URL")
     url = input()
@@ -21,6 +22,7 @@ def value_getter():
     count = int(input())
 
     return url, count
+
 
 def pic_downloader(url, file_extension, count):
     for i in range(count):
@@ -38,15 +40,16 @@ def pic_downloader(url, file_extension, count):
         file_location = file_folder + file_name
 
         # Check if edited URL is valid
-        if urllib.urlopen(url).getcode() >= 300:
+        if urllib.request.urlopen(url).getcode() >= 300:
             print("Invalid URL of", str(url) + ".\nSkipping....")
 
         else:
             print("-------------------------------------")
             print("Downloading ID : " + str(int_url) + " to " + file_location)
-            urllib.urlretrieve(url, file_name)
+            urllib.request.urlretrieve(url, file_name)
 
         pic_resizer(file_location)
+
 
 def pic_resizer(file_location):
 
@@ -85,11 +88,7 @@ def main(test_count=0):
         raise Exception('Reached maximum attempt')
 
 # URL Validation
-    if url == "":
-        print("Warning : No URL is provided...")
-        value_getter()
-        main(test_count=test_count + 1)
-    elif urllib.urlopen(url).getcode() > 400:
+    if urllib.request.urlopen(url).getcode() > 400 or url == "":
         print("Lethal : URL you provide is unreachable...")
         value_getter()
         main(test_count=test_count+1)
@@ -100,5 +99,6 @@ def main(test_count=0):
             raise Exception("Folder doesn't exist")
 
     pic_downloader(url, file_extension, count)
+
 
 main()
