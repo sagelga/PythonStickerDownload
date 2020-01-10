@@ -6,9 +6,15 @@ DISCLAIMER : Please read our legal terms on any consequence caused by this scrip
 
 ## How to use
 
+Before using, you are required to install dependencies package. By typing these to install all packages.
+
+```bash
+pip3 install -r requirements.txt
+```
+
 To use this script, run it by using
 
-```
+```bash
 python3 run.py
 ```
 
@@ -30,6 +36,15 @@ For full coding documentations and how to use this script, please read our wiki 
 For all TODOs, please check out our [project board](https://github.com/sagelga/line-to-telegram-sticker/projects) for more information
 
 Also, feel free to complete my TODOs for all Telegram users
+
+## Compatibilities
+
+Please check our compatibilities. Noted that only some Python version supports this script.
+
+| Version  | Subversion     | Status |
+| -------- | -------------- | ------ |
+| Python 3 | latest (3.7.6) |        |
+| Python 2 | latest         |        |
 
 ---
 
