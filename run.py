@@ -1,17 +1,20 @@
 # Installing the libraries
 import os
-import urllib
+import urllib.request
 
 # sudo apt-get install python-imaging
 # or install Pillow (PIL) using pip `pip install Pillow`
 import PIL
 from PIL import Image
 
-url = "https://stickershop.line-scdn.net/stickershop/v1/sticker/35755862/ANDROID/sticker.png"
-file_header = "Pic"
+# URL example https://stickershop.line-scdn.net/stickershop/v1/sticker/169508422/ANDROID/sticker.png
+url = ""
+
+file_header = "Sticker"
 file_extension = ".png"
 file_folder = ""
-count = 64
+count = 30
+
 
 def value_getter():
     print("Please type in the URL")
@@ -21,6 +24,7 @@ def value_getter():
     count = int(input())
 
     return url, count
+
 
 def pic_downloader(url, file_extension, count):
     for i in range(count):
@@ -34,19 +38,20 @@ def pic_downloader(url, file_extension, count):
         url = "/".join(url)
 
         # Set file name
-        file_name = file_folder + file_header + str(i) + file_extension
+        file_name = file_folder + file_header + str(i + 1) + file_extension
         file_location = file_folder + file_name
 
         # Check if edited URL is valid
-        if urllib.urlopen(url).getcode() >= 300:
+        if urllib.request.urlopen(url).getcode() >= 300:
             print("Invalid URL of", str(url) + ".\nSkipping....")
 
         else:
             print("-------------------------------------")
             print("Downloading ID : " + str(int_url) + " to " + file_location)
-            urllib.urlretrieve(url, file_name)
+            urllib.request.urlretrieve(url, file_name)
 
         pic_resizer(file_location)
+
 
 def pic_resizer(file_location):
 
@@ -57,17 +62,17 @@ def pic_resizer(file_location):
         print("Raw size :", str(img.size[0]) + " x " + str(img.size[1]))
 
         # Preferred new some side size
-        preference_size = 512
+        PREFERENCE_SIZE = 512
 
         # Largest side will be main thing.
-        if img.size[1] == max(img.size[0], img.size[1]):
-            ratio = (preference_size / float(img.size[1]))
+        if max(img.size[0], img.size[1]) == img.size[1]:
+            ratio = (PREFERENCE_SIZE / float(img.size[1]))
             wsize = int((float(img.size[0]) * float(ratio)))
-            img = img.resize((wsize, preference_size), PIL.Image.ANTIALIAS)
+            img = img.resize((wsize, PREFERENCE_SIZE), PIL.Image.ANTIALIAS)
         else:
-            ratio = (preference_size / float(img.size[0]))
+            ratio = (PREFERENCE_SIZE / float(img.size[0]))
             wsize = int((float(img.size[1]) * float(ratio)))
-            img = img.resize((preference_size, wsize), PIL.Image.ANTIALIAS)
+            img = img.resize((PREFERENCE_SIZE, wsize), PIL.Image.ANTIALIAS)
 
         print("New size :", str(img.size[0]), "x", str(img.size[1]))
 
@@ -85,11 +90,7 @@ def main(test_count=0):
         raise Exception('Reached maximum attempt')
 
 # URL Validation
-    if url == "":
-        print("Warning : No URL is provided...")
-        value_getter()
-        main(test_count=test_count + 1)
-    elif urllib.urlopen(url).getcode() > 400:
+    if urllib.request.urlopen(url).getcode() > 400 or url == "":
         print("Lethal : URL you provide is unreachable...")
         value_getter()
         main(test_count=test_count+1)
@@ -100,5 +101,6 @@ def main(test_count=0):
             raise Exception("Folder doesn't exist")
 
     pic_downloader(url, file_extension, count)
+
 
 main()
