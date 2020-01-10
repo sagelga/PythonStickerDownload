@@ -1,70 +1,60 @@
 # Installing the libraries
 import os
-import urllib.request
+import requests
 
-# sudo apt-get install python-imaging
-# or install Pillow (PIL) using pip `pip install Pillow`
 import PIL
 from PIL import Image
+from io import BytesIO
 
-# URL example https://stickershop.line-scdn.net/stickershop/v1/sticker/169508422/ANDROID/sticker.png
-url = ""
-
-file_header = "Sticker"
-file_extension = ".png"
-file_folder = ""
-count = 30
-
-
-def value_getter():
-    print("Please type in the URL")
-    url = input()
-
-    print("How many stickers are in that pack?")
-    count = int(input())
-
-    return url, count
+FIRST_ID = 0
+STICKER_COUNT = 30
+DEST_FOLDER = ''
+FILE_PREFIX = 'sticker'
+BASE_URL_PREFIX = 'https://stickershop.line-scdn.net/stickershop/v1/sticker/'
+BASE_URL_SUFFIX = "/ANDROID/sticker.png"
+PREFERENCE_SIZE = 512
 
 
-def pic_downloader(url, file_extension, count):
-    for i in range(count):
-        # Editing a URL
-        url = url.split('/')
-        if i:
-            int_url = int(url[6]) + 1
-        else:
-            int_url = int(url[6])
-        url[6] = str(int_url)
-        url = "/".join(url)
+def main():
+    # Check for configuration error
+    if (DEST_FOLDER != '') and (not os.path.exists(DEST_FOLDER)):
+        raise Exception("Folder doesn't exist")
 
-        # Set file name
-        file_name = file_folder + file_header + str(i + 1) + file_extension
-        file_location = file_folder + file_name
+    # Retrieve sticker ID
+    FIRST_ID = int(input('First Sticker ID : '))
 
-        # Check if edited URL is valid
-        if urllib.request.urlopen(url).getcode() >= 300:
-            print("Invalid URL of", str(url) + ".\nSkipping....")
+    # Retrieve sticker count
+    STICKER_COUNT = int(input('Sticker count in the pack : '))
 
-        else:
-            print("-------------------------------------")
-            print("Downloading ID : " + str(int_url) + " to " + file_location)
-            urllib.request.urlretrieve(url, file_name)
-
-        pic_resizer(file_location)
+    for i in range(STICKER_COUNT):
+        stickerRetrieve(FIRST_ID + i)
 
 
-def pic_resizer(file_location):
+def stickerRetrieve(id):
+    id = str(id)
+
+    url = BASE_URL_PREFIX + id + BASE_URL_SUFFIX
+    print("-------------------------------------")
+    print('Downloading from : '+url)
 
     try:
-        img = Image.open(file_location)
+        # Retrive binaries
+        img = requests.get(url, timeout=(10, 30))
+        img.raise_for_status()
+    except Timeout as identifier:
+        # https://2.python-requests.org//en/master/user/quickstart/#timeouts
+        print('Timeout')
+    except TooManyRedirects:
+        print('Too many redirects')
+    except HTTPError:
+        print('Unable to have HTTP connection')
 
-        # Checking the photo size
+    # Converts the image into a Telegram friendly size
+    try:
+        img = Image.open(BytesIO(img.content))
         print("Raw size :", str(img.size[0]) + " x " + str(img.size[1]))
 
-        # Preferred new some side size
-        PREFERENCE_SIZE = 512
-
-        # Largest side will be main thing.
+        # Widest side will be sized 512px, and others will scale properly
         if max(img.size[0], img.size[1]) == img.size[1]:
             ratio = (PREFERENCE_SIZE / float(img.size[1]))
             wsize = int((float(img.size[0]) * float(ratio)))
@@ -77,30 +67,14 @@ def pic_resizer(file_location):
         print("New size :", str(img.size[0]), "x", str(img.size[1]))
 
         # Save the file, where it should be
-        img.save(file_location)
-        print("File is saved at", str(file_location))
+        img_dest = DEST_FOLDER + FILE_PREFIX + id + '.png'
+        img.save(img_dest)
+        print("Sticker destination : " + str(img_dest))
 
-    except IOError:
-        # Psudo throwing an exception (not throwing unacceptable error)
-        print("Resizer cannot open file : " + file_location)
-
-
-def main(test_count=0):
-    if test_count >= 5:
-        raise Exception('Reached maximum attempt')
-
-# URL Validation
-    if urllib.request.urlopen(url).getcode() > 400 or url == "":
-        print("Lethal : URL you provide is unreachable...")
-        value_getter()
-        main(test_count=test_count+1)
-
-    # Folder Validation
-    if file_folder != "":
-        if not os.path.exists(file_folder):
-            raise Exception("Folder doesn't exist")
-
-    pic_downloader(url, file_extension, count)
+    except IOError as identifier:
+        pass
+    except KeyError as identifier:
+        pass
 
 
 main()
