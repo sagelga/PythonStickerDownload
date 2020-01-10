@@ -7,11 +7,13 @@ import urllib.request
 import PIL
 from PIL import Image
 
-url = "https://stickershop.line-scdn.net/stickershop/v1/sticker/35755862/ANDROID/sticker.png"
-file_header = "Pic"
+# URL example https://stickershop.line-scdn.net/stickershop/v1/sticker/169508422/ANDROID/sticker.png
+url = ""
+
+file_header = "Sticker"
 file_extension = ".png"
 file_folder = ""
-count = 64
+count = 30
 
 
 def value_getter():
@@ -36,7 +38,7 @@ def pic_downloader(url, file_extension, count):
         url = "/".join(url)
 
         # Set file name
-        file_name = file_folder + file_header + str(i) + file_extension
+        file_name = file_folder + file_header + str(i + 1) + file_extension
         file_location = file_folder + file_name
 
         # Check if edited URL is valid
@@ -60,17 +62,17 @@ def pic_resizer(file_location):
         print("Raw size :", str(img.size[0]) + " x " + str(img.size[1]))
 
         # Preferred new some side size
-        preference_size = 512
+        PREFERENCE_SIZE = 512
 
         # Largest side will be main thing.
-        if img.size[1] == max(img.size[0], img.size[1]):
-            ratio = (preference_size / float(img.size[1]))
+        if max(img.size[0], img.size[1]) == img.size[1]:
+            ratio = (PREFERENCE_SIZE / float(img.size[1]))
             wsize = int((float(img.size[0]) * float(ratio)))
-            img = img.resize((wsize, preference_size), PIL.Image.ANTIALIAS)
+            img = img.resize((wsize, PREFERENCE_SIZE), PIL.Image.ANTIALIAS)
         else:
-            ratio = (preference_size / float(img.size[0]))
+            ratio = (PREFERENCE_SIZE / float(img.size[0]))
             wsize = int((float(img.size[1]) * float(ratio)))
-            img = img.resize((preference_size, wsize), PIL.Image.ANTIALIAS)
+            img = img.resize((PREFERENCE_SIZE, wsize), PIL.Image.ANTIALIAS)
 
         print("New size :", str(img.size[0]), "x", str(img.size[1]))
 
