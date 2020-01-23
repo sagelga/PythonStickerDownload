@@ -1,2 +1,2 @@
 pip3 install pillow
-pip install requests
+pip3 install requests

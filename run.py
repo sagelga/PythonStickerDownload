@@ -54,15 +54,9 @@ def stickerRetrieve(id):
         img = Image.open(BytesIO(img.content))
         print("Raw size :", str(img.size[0]) + " x " + str(img.size[1]))
 
-        # Widest side will be sized 512px, and others will scale properly
-        if max(img.size[0], img.size[1]) == img.size[1]:
-            ratio = (PREFERENCE_SIZE / float(img.size[1]))
-            wsize = int((float(img.size[0]) * float(ratio)))
-            img = img.resize((wsize, PREFERENCE_SIZE), PIL.Image.ANTIALIAS)
-        else:
-            ratio = (PREFERENCE_SIZE / float(img.size[0]))
-            wsize = int((float(img.size[1]) * float(ratio)))
-            img = img.resize((PREFERENCE_SIZE, wsize), PIL.Image.ANTIALIAS)
+        ratio = (PREFERENCE_SIZE / float(img.size[1]))
+        wsize = int((float(img.size[0]) * float(ratio)))
+        img = img.resize((wsize, PREFERENCE_SIZE), PIL.Image.ANTIALIAS)
 
         print("New size :", str(img.size[0]), "x", str(img.size[1]))
 
